@@ -17,3 +17,7 @@ def validate_food_input(query):
 
 def normalize_query(query):
     return query.strip().lower()
+
+
+def validate_food_weight(weight):
+    pass

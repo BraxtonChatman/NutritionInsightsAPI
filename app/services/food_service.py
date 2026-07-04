@@ -1,5 +1,5 @@
-from app.core.validation import validate_food_input, normalize_query
-from app.core.food_service_helper import select_best_food, normalize_nutrients, generate_insights, generate_comparison_insights
+from app.core.validation import validate_food_input, normalize_query, validate_food_weight, parse_meal_query
+from app.core.food_service_helper import select_best_food, normalize_nutrients, generate_insights, generate_comparison_insights, generate_meal_insights, generate_meal_macros
 from extensions import usda_client
 
 def get_food(query):
@@ -55,19 +55,19 @@ def get_food(query):
 
 def get_comparison(food1, food2):
     errors = []
-    food1 = get_food(food1, "food 1: ")
-    food2 = get_food(food2, "food 2: ")
+    food1 = get_food(food1)
+    food2 = get_food(food2)
 
     if not food1["success"]:
         errors.append({
-            "field": "food1",
+            "field": "food 1",
             "error": food1["error"],
             "status": food1["status"]
         })
 
     if not food2["success"]:
        errors.append({
-            "field": "food2",
+            "field": "food 2",
             "error": food2["error"],
             "status": food2["status"]
         })
@@ -75,7 +75,7 @@ def get_comparison(food1, food2):
     if errors:
         return {
             "success": False,
-            "error": errors,
+            "errors": errors,
             "status": 400
         }
     
@@ -98,10 +98,53 @@ def get_comparison(food1, food2):
 
 
 def get_meal(payload):
-    # validate & normalize input
+    errors = []
+    weights = []
+    food_data = []
+
+    # chunk of into (food, g) pairs.
+    food_weight_pairs = parse_meal_query(payload)
+
+    for i in range(len(food_weight_pairs)):
+        food_i = get_food(food_weight_pairs[i][0])
+        if not food_i["success"]:
+            errors.append({
+                "field": f"food {i+1}",
+                "error": food_i["error"],
+                "status": food_i["status"]
+            })
+        else:
+            food_data.append(food_i["data"])
+
+        is_valid, error = validate_food_weight(food_weight_pairs[i][1])
+        if not is_valid:
+            errors.append({
+                "field": f"weight {i+1}",
+                "error": error,
+                "status": 400
+            })
+        else:
+            weights.append(food_weight_pairs[i][1])
+
+    if errors:
+        return {
+            "success": False,
+            "errors": errors,
+            "status": 400
+        }
     
-    # call to client api handler function
+    foods = [food_data[i]["food"] for i in range(len(food_data))]
+    insights = generate_meal_insights(food_data, weights)
+    macros = generate_meal_macros(food_data, weights)
 
-    # return result
-
-    pass
+    return {
+        "success": True,
+        "data": {
+            "foods": foods,
+            "weights": weights,
+            "macros": macros,
+            "insights": insights
+        },
+        "status": 200
+    }
+    
