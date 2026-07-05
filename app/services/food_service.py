@@ -1,4 +1,4 @@
-from app.core.validation import validate_food_input, normalize_query, validate_food_weight, parse_meal_query
+from app.core.validation import validate_food_input, normalize_query, validate_food_grams, validate_meal_query
 from app.core.food_service_helper import select_best_food, normalize_nutrients, generate_insights, generate_comparison_insights, generate_meal_insights, generate_meal_macros
 from extensions import usda_client
 
@@ -102,21 +102,26 @@ def get_meal(payload):
     weights = []
     food_data = []
 
-    # chunk of into (food, g) pairs.
-    food_weight_pairs = parse_meal_query(payload)
+    is_valid, error = validate_meal_query(payload)
+    if not is_valid:
+        return {
+            "success": False,
+            "error": error,
+            "status": 400
+        }
 
-    for i in range(len(food_weight_pairs)):
-        food_i = get_food(food_weight_pairs[i][0])
-        if not food_i["success"]:
+    for i, item in enumerate(payload["items"]):
+        food_result = get_food(item["food_name"])
+        if not food_result["success"]:
             errors.append({
                 "field": f"food {i+1}",
-                "error": food_i["error"],
-                "status": food_i["status"]
+                "error": food_result["error"],
+                "status": food_result["status"]
             })
         else:
-            food_data.append(food_i["data"])
+            food_data.append(food_result["data"])
 
-        is_valid, error = validate_food_weight(food_weight_pairs[i][1])
+        is_valid, error = validate_food_grams(item["grams"])
         if not is_valid:
             errors.append({
                 "field": f"weight {i+1}",
@@ -124,7 +129,7 @@ def get_meal(payload):
                 "status": 400
             })
         else:
-            weights.append(food_weight_pairs[i][1])
+            weights.append(item["grams"])
 
     if errors:
         return {
@@ -133,7 +138,7 @@ def get_meal(payload):
             "status": 400
         }
     
-    foods = [food_data[i]["food"] for i in range(len(food_data))]
+    foods = [food["food"] for food in food_data]
     insights = generate_meal_insights(food_data, weights)
     macros = generate_meal_macros(food_data, weights)
 
