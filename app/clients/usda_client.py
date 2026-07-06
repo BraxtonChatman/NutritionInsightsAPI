@@ -36,12 +36,3 @@ class USDAClient:
         except requests.exceptions.RequestException:
             return None
 
-    
-
-# if __name__ == "__main__":
-
-#     client = USDAClient(api_key="DEMO_KEY")
-
-#     result = client.search_food("banana")
-
-#     print(result["foods"][0]['foodNutrients'])
