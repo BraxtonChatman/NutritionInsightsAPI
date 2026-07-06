@@ -5,3 +5,5 @@ def create_app(config_name = None):
     app = Flask(__name__, instance_relative_config=True)
 
     app.register_blueprint(api_food_bp)
+
+    return app

@@ -1,11 +1,47 @@
-
+import requests
 
 class USDAClient:
+
+    BASE_URL = "https://api.nal.usda.gov/fdc/v1"
+
     def __init__(self, api_key):
         self.api_key = api_key
 
-    def search_food(food_name):
-        pass
+    def search_food(self, query):
+        url = f"{self.BASE_URL}/foods/search"
 
-    def get_food_by_id(fdcId):
-        pass
+        params = {
+            "api_key": self.api_key,
+            "query": query
+        }
+
+        try:
+            response = requests.get(url, params=params, timeout=15)
+            response.raise_for_status
+            return response.json()
+        except requests.exceptions.RequestException:
+            return None
+
+    def get_food_by_id(self, fdcId):
+        url = f"{self.BASE_URL}/food/{fdcId}"
+
+        params = {
+            "api_key": self.api_key,
+        }
+
+        try:
+            response = requests.get(url, params=params, timeout=15)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException:
+            return None
+
+    
+
+# if __name__ == "__main__":
+
+#     client = USDAClient(api_key="DEMO_KEY")
+
+#     result = client.search_food("banana")
+
+#     print(result["foods"][0]['foodNutrients'])

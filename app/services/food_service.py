@@ -1,6 +1,6 @@
 from app.core.validation import validate_food_input, normalize_query, validate_food_grams, validate_meal_query
 from app.core.food_service_helper import select_best_food, normalize_nutrients, generate_insights, generate_comparison_insights, generate_meal_insights, generate_meal_macros
-from extensions import usda_client
+from app.extensions import usda_client
 
 def get_food(query):
 
