@@ -22,7 +22,7 @@ def get_food(query):
             "status": 404
         }
 
-    best_match = select_best_food(results["foods"])
+    best_match = select_best_food(results["foods"], query)
     if not best_match:
         return {
             "success": False,
@@ -30,7 +30,7 @@ def get_food(query):
             "status": 404
         }
 
-    details = usda_client.get_food_by_id(best_match["fdcId"])
+    details = usda_client.get_food_by_id(best_match["fdcId"], nutrients=["all"])
     if not details:
         return {
             "success": False,

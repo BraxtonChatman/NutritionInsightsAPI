@@ -22,12 +22,35 @@ class USDAClient:
         except requests.exceptions.RequestException:
             return None
 
-    def get_food_by_id(self, fdcId):
+    def get_food_by_id(self, fdcId, nutrients=[]):
         url = f"{self.BASE_URL}/food/{fdcId}"
+        nutrient_numbers = {
+            "calories": 208,
+            "fat": 204,
+            "saturated fat": 606,
+            "cholesterol": 601,
+            "carbohydrate": 205,
+            "fiber": 291,
+            "sodium": 307,
+            "potassium": 306,
+            "protein": 203
 
-        params = {
-            "api_key": self.api_key,
         }
+
+        if nutrients == []:
+            params = {
+                "api_key": self.api_key,
+            }
+        else:
+            if nutrients == ["all"]:
+                selected = [nu[1] for nu in nutrient_numbers.items()]
+            else:
+                selected = [nutrient_numbers[name] for name in nutrients]
+            params = {
+                "api_key": self.api_key,
+                "format": "abridged",
+                "nutrients": selected
+            }
 
         try:
             response = requests.get(url, params=params, timeout=15)

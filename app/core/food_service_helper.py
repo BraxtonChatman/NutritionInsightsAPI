@@ -1,4 +1,17 @@
 
+NUTRIENT_THRESHOLDS = {
+        # "calories": {"low": 1, "high": 2},
+        "fat": {"low": 3, "high": 17},
+        # "saturated fat": {"low": 1, "high": 2},
+        # "cholesterol": {"low": 1, "high": 2},
+        "carbohydrate": {"low": 5, "high": 30},
+        "fiber": {"low": 2, "high": 5},
+        "sodium": {"low": 100, "high": 500},
+        "potassium": {"low": 100, "high": 400},
+        "protein": {"low": 5, "high": 20}
+    }
+
+
 def select_best_food(foods, query):
     best_item = max(foods, key=lambda i: score_food(i,query))
     return best_item
@@ -141,17 +154,45 @@ def detect_form(text):
 
     return max(scores, key=scores.get)
 
-def token_overlap_score(query, food):
-    q_tokens = set(query.split())
-    f_tokens = set(food.split())
-
-    return len(q_tokens & f_tokens) / (len(q_tokens) + 1e-6)
-
 def normalize_nutrients(details):
-    pass
+    nutrients = {}
+
+    for nutrient in details["foodNutrients"]:
+        nutrient_number = nutrient["number"]
+        amount = nutrient["amount"]
+        nutrients[nutrient_number] = amount
+
+
+    return {
+        "calories": nutrients.get("208"),
+        "fat": nutrients.get("204"),
+        "saturated fat": nutrients.get("606"),
+        "cholesterol": nutrients.get("601"),
+        "carbohydrate": nutrients.get("205"),
+        "fiber": nutrients.get("291"),
+        "sodium": nutrients.get("307"),
+        "potassium": nutrients.get("306"),
+        "protein": nutrients.get("203")
+    }
 
 def generate_insights(normalized):
-    pass
+    insights = []
+
+    for nutrient, value in normalized.items():
+        if value is None:
+            continue
+
+        threshold = NUTRIENT_THRESHOLDS.get(nutrient)
+        if threshold is None:
+            continue
+        
+        if value < threshold["low"]:
+            insights.append(f"low {nutrient}")
+        elif value > threshold["high"]:
+            insights.append(f"high {nutrient}")
+
+    return insights
+            
 
 def generate_comparison_insights(food1_data, food2_data):
     pass
