@@ -1,3 +1,4 @@
+from app.config import Config
 from app.clients.usda_client import USDAClient
 
-usda_client = USDAClient(api_key="DEMO_KEY")
+usda_client = USDAClient(Config.USDA_API_KEY)
