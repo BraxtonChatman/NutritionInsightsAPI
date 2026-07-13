@@ -28,7 +28,8 @@ def score_food(food, query):
     query_top = max(query_scores, key=query_scores.get)
     if food_top == query_top:
         cat_score = 1.0
-    cat_score =  0.0
+    else:
+        cat_score =  0.0
     score += 40 * cat_score
     
     food_form = detect_form(food_name)
@@ -78,7 +79,7 @@ def score_food(food, query):
         score += 100
     elif dataType == "SR Legacy":
         score += 20
-    elif dataType == "Survey (FNNDDS)":
+    elif dataType == "Survey (FNDDS)":
         score += 10
     else:
         score -= 80

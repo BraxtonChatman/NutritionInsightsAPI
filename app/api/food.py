@@ -9,7 +9,7 @@ def food():
     result = get_food(request.args.get("query"))
 
     if not result["success"]:
-        return jsonify(result), 404
+        return jsonify(result), result["status"]
     return jsonify(result), 200
 
 
@@ -21,7 +21,7 @@ def comparison():
     result = get_comparison(food1, food2)
 
     if not result["success"]:
-        return jsonify(result), 404
+        return jsonify(result), result["status"]
     return jsonify(result), 200
 
 
@@ -32,6 +32,6 @@ def meal():
     result = get_meal(meal_request)
 
     if not result["success"]:
-        return jsonify(result), 404
+        return jsonify(result), result["status"]
     return jsonify(result), 200
 

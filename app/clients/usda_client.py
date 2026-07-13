@@ -17,12 +17,12 @@ class USDAClient:
 
         try:
             response = requests.get(url, params=params, timeout=15)
-            response.raise_for_status
+            response.raise_for_status()
             return response.json()
         except requests.exceptions.RequestException:
             return None
 
-    def get_food_by_id(self, fdcId, nutrients=[]):
+    def get_food_by_id(self, fdcId, nutrients=None):
         url = f"{self.BASE_URL}/food/{fdcId}"
         nutrient_numbers = {
             "calories": 208,
@@ -37,13 +37,13 @@ class USDAClient:
 
         }
 
-        if nutrients == []:
+        if nutrients is None:
             params = {
                 "api_key": self.api_key,
             }
         else:
             if nutrients == ["all"]:
-                selected = [nu[1] for nu in nutrient_numbers.items()]
+                selected = list(nutrient_numbers.values())
             else:
                 selected = [nutrient_numbers[name] for name in nutrients]
             params = {
