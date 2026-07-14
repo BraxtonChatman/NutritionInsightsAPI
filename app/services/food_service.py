@@ -2,7 +2,7 @@ from app.core.validation import validate_food_input, normalize_query, validate_f
 from app.core.food_service_helper import select_best_food, normalize_nutrients, generate_insights, generate_comparison_insights, generate_meal_insights, generate_meal_macros
 from app.extensions import usda_client
 
-def get_food(query):
+def get_food(query, client=usda_client):
 
     is_valid, error = validate_food_input(query)
     if not is_valid:
@@ -14,7 +14,7 @@ def get_food(query):
     
     query = normalize_query(query)
 
-    results = usda_client.search_food(query)
+    results = client.search_food(query)
     if not results or "foods" not in results or len(results["foods"])==0:
         return {
             "success": False,

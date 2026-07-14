@@ -153,6 +153,9 @@ def detect_form(text):
             if w in text:
                 scores[form] += 1
 
+    if list(scores.values()) == [0, 0, 0, 0]:
+        return "NA"
+
     return max(scores, key=scores.get)
 
 def normalize_nutrients(details):
