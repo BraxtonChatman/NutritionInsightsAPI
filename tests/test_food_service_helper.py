@@ -81,3 +81,129 @@ def test_select_best_food():
 
     assert result["description"] == "Raw banana"
 
+def test_normalize_nutrients():
+    details = {
+        "foodNutrients": [
+            {"number": "208", "amount": 100},
+            {"number": "204", "amount": 5},
+            {"number": "606", "amount": 2},
+            {"number": "601", "amount": 10},
+            {"number": "205", "amount": 15},
+            {"number": "291", "amount": 3},
+            {"number": "307", "amount": 250},
+            {"number": "306", "amount": 400},
+            {"number": "203", "amount": 8},
+        ]
+    }
+
+    result = normalize_nutrients(details)
+
+    assert result == {
+        "calories": 100,
+        "fat": 5,
+        "saturated fat": 2,
+        "cholesterol": 10,
+        "carbohydrate": 15,
+        "fiber": 3,
+        "sodium": 250,
+        "potassium": 400,
+        "protein": 8
+    }
+
+def test_normalize_nutrients_missing_values():
+
+    details = {
+        "foodNutrients": [
+            {"number": "208", "amount": 100},
+            {"number": "203", "amount": 8},
+        ]
+    }
+
+    result = normalize_nutrients(details)
+
+    assert result["calories"] == 100
+    assert result["protein"] == 8
+    assert result["fat"] is None
+    assert result["fiber"] is None
+
+def test_normalize_nutrients_empty():
+    details = {
+        "foodNutrients": []
+    }
+
+    result = normalize_nutrients(details)
+
+    assert result == {
+        "calories": None,
+        "fat": None,
+        "saturated fat": None,
+        "cholesterol": None,
+        "carbohydrate": None,
+        "fiber": None,
+        "sodium": None,
+        "potassium": None,
+        "protein": None
+    }
+
+def test_generate_insights_low_values():
+    normalized = {
+        "fat": 2,
+        "protein": 4
+    }
+
+    result = generate_insights(normalized)
+
+    assert result == [
+        "low fat",
+        "low protein"
+    ]
+
+def test_generate_insights_high_values():
+    normalized = {
+        "fat": 18,
+        "protein": 25
+    }
+
+    result = generate_insights(normalized)
+
+    assert result == [
+        "high fat",
+        "high protein"
+    ]
+
+def test_generate_insights_normal_values():
+    normalized = {
+        "fat": 10,
+        "protein": 10
+    }
+
+    result = generate_insights(normalized)
+
+    assert result == []
+
+def test_generate_insights_ignores_none():
+    normalized = {
+        "fat": None,
+        "protein": None
+    }
+
+    result = generate_insights(normalized)
+
+    assert result == []
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
