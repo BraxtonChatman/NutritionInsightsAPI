@@ -1,5 +1,5 @@
 import pytest
-from app.core.food_service_helper import select_best_food, score_food, category_score, extract_head_term, detect_form, normalize_nutrients, generate_insights
+from app.core.food_service_helper import select_best_food, score_food, category_score, extract_head_term, detect_form, normalize_nutrients, generate_insights, generate_comparison_insights
 
 KEYS = ["fruit","vegetable", "grain", "dairy", "meat"]
 
@@ -191,11 +191,177 @@ def test_generate_insights_ignores_none():
 
     assert result == []
 
+def test_generate_comparison_insights():
+    food1_data = {
+        "food": "chicken",
+        "macros": {
+            "calories": 255,
+            "fat": 10,
+            "saturated fat": 3,
+            "cholesterol": None,
+            "carbohydrate": 3,
+            "fiber": 0,
+            "sodium": None,
+            "potassium": None,
+            "protein": 27
+        }
+    }
 
+    food2_data = {
+        "food": "apple",
+        "macros": {
+            "calories": 55,
+            "fat": 0,
+            "saturated fat": None,
+            "cholesterol": None,
+            "carbohydrate": 32,
+            "fiber": 3,
+            "sodium": 20,
+            "potassium": 12,
+            "protein": 1
+        }
+    }
 
+    result = generate_comparison_insights(food1_data, food2_data)
 
+    assert set(result) == set(
+        [
+        "chicken has more calories than apple - (255 vs 55)",
+        "chicken has more fat than apple - (10 vs 0)",
+        "apple has more carbohydrate than chicken - (32 vs 3)",
+        "apple has more fiber than chicken - (3 vs 0)",
+        "chicken has more protein than apple - (27 vs 1)"
+        ]
+    )
 
+def test_generate_comparison_insights_ignores_small_difference():
 
+    food1 = {
+        "food": "food1",
+        "macros": {
+            "protein": 10
+        }
+    }
+
+    food2 = {
+        "food": "food2",
+        "macros": {
+            "protein": 10.5
+        }
+    }
+
+    result = generate_comparison_insights(food1, food2)
+
+    assert result == []
+
+def test_generate_comparison_insights_food1_has_more():
+
+    food1 = {
+        "food": "chicken",
+        "macros": {
+            "protein": 27
+        }
+    }
+
+    food2 = {
+        "food": "apple",
+        "macros": {
+            "protein": 1
+        }
+    }
+
+    result = generate_comparison_insights(food1, food2)
+
+    assert result == [
+        "chicken has more protein than apple - (27 vs 1)"
+    ]
+
+def test_generate_comparison_insights_food2_has_more():
+
+    food1 = {
+        "food": "chicken",
+        "macros": {
+            "carbohydrate": 3
+        }
+    }
+
+    food2 = {
+        "food": "apple",
+        "macros": {
+            "carbohydrate": 32
+        }
+    }
+
+    result = generate_comparison_insights(food1, food2)
+
+    assert result == [
+        "apple has more carbohydrate than chicken - (32 vs 3)"
+    ]
+
+def test_generate_comparison_insights_ignores_none():
+
+    food1 = {
+        "food": "chicken",
+        "macros": {
+            "protein": None
+        }
+    }
+
+    food2 = {
+        "food": "apple",
+        "macros": {
+            "protein": 1
+        }
+    }
+
+    result = generate_comparison_insights(food1, food2)
+
+    assert result == []
+
+def test_generate_comparison_insights_ignores_small_difference():
+
+    food1 = {
+        "food": "food1",
+        "macros": {
+            "protein": 10
+        }
+    }
+
+    food2 = {
+        "food": "food2",
+        "macros": {
+            "protein": 10.5
+        }
+    }
+
+    result = generate_comparison_insights(food1, food2)
+
+    assert result == []
+
+def test_generate_comparison_insights_multiple_nutrients():
+
+    food1 = {
+        "food": "chicken",
+        "macros": {
+            "fat": 10,
+            "protein": 27
+        }
+    }
+
+    food2 = {
+        "food": "apple",
+        "macros": {
+            "fat": 0,
+            "protein": 1
+        }
+    }
+
+    result = generate_comparison_insights(food1, food2)
+
+    assert set(result) == {
+        "chicken has more fat than apple - (10 vs 0)",
+        "chicken has more protein than apple - (27 vs 1)"
+    }
 
 
 

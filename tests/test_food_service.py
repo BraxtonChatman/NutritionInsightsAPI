@@ -1,11 +1,8 @@
-from app.services.food_service import get_food
+from app.services.food_service import get_food, get_comparison
 
 
 def test_get_food_success(fake_usda_client):
-    result = get_food(
-        "banana",
-        client=fake_usda_client
-    )
+    result = get_food("banana", client=fake_usda_client)
 
     assert result["success"] is True
     assert result["data"]["food"] == "Banana, raw"
@@ -21,12 +18,9 @@ def test_get_food_invalid_query(fake_usda_client):
     assert result["success"] is False
     assert result["status"] == 400
 
-def test_get_food_not_found():
-    class EmptyClient:
-        def search_food(self, query):
-            return None
-        
-    client = EmptyClient()
+def test_get_food_not_found(empty_client):
+    
+    client = empty_client
 
     result = get_food(
         "banana",
@@ -136,14 +130,32 @@ def test_get_food_generates_insights():
     assert result["success"] is True
     assert "high protein" in result["data"]["insights"]
 
+def test_get_comparison_no_food(empty_client):
+    result = get_comparison("apple", "chicken", empty_client)
 
+    assert result["success"] is False
+    assert result["status"] == 400
 
+def test_get_comparison(fake_usda_client):
+    result = get_comparison("apple", "chicken", client=fake_usda_client)
 
+    assert result["success"] is True
+    assert result["status"] == 200
+    
+    data = result["data"]
 
+    assert data["food1"] == "Apple"
+    assert data["food2"] == "Chicken"
 
+    assert data["food1_macros"]["calories"] == 55
+    assert data["food1_macros"]["protein"] == 1
 
+    assert data["food2_macros"]["calories"] == 255
+    assert data["food2_macros"]["protein"] == 27
 
+    insights = set(data["comparison_insights"])
 
+    assert insights == set(["Chicken has more calories than Apple - (255 vs 55)", "Chicken has more protein than Apple - (27 vs 1)"])
 
 
 

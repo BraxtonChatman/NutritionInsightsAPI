@@ -1,6 +1,6 @@
 
 NUTRIENT_THRESHOLDS = {
-        # "calories": {"low": 1, "high": 2},
+        "calories": {"low": 75, "high": 225},
         "fat": {"low": 3, "high": 17},
         # "saturated fat": {"low": 1, "high": 2},
         # "cholesterol": {"low": 1, "high": 2},
@@ -198,10 +198,33 @@ def generate_insights(normalized):
     return insights
             
 def generate_comparison_insights(food1_data, food2_data):
+    insights = []
+
+    food1_name = food1_data["food"]
+    food1_macros = food1_data["macros"]
+
+    food2_name = food2_data["food"]
+    food2_macros = food2_data["macros"]
+
+    for nutrient in NUTRIENT_THRESHOLDS.keys():
+        nutrient1 = food1_macros.get(nutrient)
+        nutrient2 = food2_macros.get(nutrient)
+
+        if nutrient1 is None or nutrient2 is None:
+            continue
+        
+        if nutrient1 > 1.1 * nutrient2:
+            insights.append(f"{food1_name} has more {nutrient} than {food2_name} - ({nutrient1} vs {nutrient2})")
+        
+        elif nutrient2 > 1.1 * nutrient1:
+            insights.append(f"{food2_name} has more {nutrient} than {food1_name} - ({nutrient2} vs {nutrient1})")
+
+    return insights
+
+def generate_meal_macros(food_data, weights):
     pass
 
-def generate_meal_insights(food_data, weights):
+def generate_meal_insights(macros, weights):
     pass
 
-def generate_meal_macros():
-    pass
+

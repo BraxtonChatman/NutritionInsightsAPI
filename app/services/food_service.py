@@ -47,10 +47,10 @@ def get_food(query, client=usda_client):
     }
 
 
-def get_comparison(food1, food2):
+def get_comparison(food1, food2, client=usda_client):
     errors = []
-    food1 = get_food(food1)
-    food2 = get_food(food2)
+    food1 = get_food(food1, client=client)
+    food2 = get_food(food2, client=client)
 
     if not food1["success"]:
         errors.append({
@@ -133,8 +133,8 @@ def get_meal(payload):
         }
     
     foods = [food["food"] for food in food_data]
-    insights = generate_meal_insights(food_data, weights)
     macros = generate_meal_macros(food_data, weights)
+    insights = generate_meal_insights(macros, weights)
 
     return {
         "success": True,
