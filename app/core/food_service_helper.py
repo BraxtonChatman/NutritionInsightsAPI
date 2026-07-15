@@ -197,7 +197,6 @@ def generate_insights(normalized):
 
     return insights
             
-
 def generate_comparison_insights(food1_data, food2_data):
     pass
 

@@ -14,8 +14,9 @@ def test_non_string_query(query):
     assert valid is False
     assert error == "Query must be a string"
 
-def test_empty_query():
-    valid, error = validate_food_input("")
+@pytest.mark.parametrize("query", ["", "   ", "\t"])
+def test_empty_query(query):
+    valid, error = validate_food_input(query)
 
     assert valid is False
     assert error == "Query cannot be empty"
@@ -30,7 +31,7 @@ def test_validate_food_input_success():
     valid, error = validate_food_input("food")
 
     assert valid is True
-    assert error == None
+    assert error is None
 
 @pytest.mark.parametrize("query, expected", [
     ("already fine", "already fine"),

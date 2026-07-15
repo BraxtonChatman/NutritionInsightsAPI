@@ -23,14 +23,8 @@ def get_food(query, client=usda_client):
         }
 
     best_match = select_best_food(results["foods"], query)
-    if not best_match:
-        return {
-            "success": False,
-            "error": "Could not determine best match",
-            "status": 404
-        }
 
-    details = usda_client.get_food_by_id(best_match["fdcId"], nutrients=["all"])
+    details = client.get_food_by_id(best_match["fdcId"], nutrients=["all"])
     if not details:
         return {
             "success": False,
