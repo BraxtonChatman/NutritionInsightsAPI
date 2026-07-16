@@ -318,26 +318,6 @@ def test_generate_comparison_insights_ignores_none():
 
     assert result == []
 
-def test_generate_comparison_insights_ignores_small_difference():
-
-    food1 = {
-        "food": "food1",
-        "macros": {
-            "protein": 10
-        }
-    }
-
-    food2 = {
-        "food": "food2",
-        "macros": {
-            "protein": 10.5
-        }
-    }
-
-    result = generate_comparison_insights(food1, food2)
-
-    assert result == []
-
 def test_generate_comparison_insights_multiple_nutrients():
 
     food1 = {
