@@ -187,11 +187,7 @@ pip install -r requirements.txt
 
 ## Environment Variables
 
-Create a `.env` file in the project root or copy the example file:
-
-```bash
-cp .env.example .env
-```
+Create a `.env` file in the project root based on `.env.example`.
 
 If no API key is provided, the application defaults to the USDA `DEMO_KEY`.
 
