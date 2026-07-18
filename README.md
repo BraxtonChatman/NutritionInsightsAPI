@@ -2,7 +2,7 @@
 
 Nutrition Insights API is a Flask-based REST API that integrates with the USDA FoodData Central API to provide nutritional information, nutrient analysis, and food comparisons. The project applies custom business logic to process nutrient data, select the most relevant food results, and generate human-readable insights from nutritional content.
 
-This project was built to demonstrate backend software engineering skills, including API design, service-oriented architecture, dependency injection, testing, and configuration management.
+This project was built to demonstrate backend software engineering skills, including API design, layered architecture, dependency injection, testing, and configuration management.
 
 ---
 
@@ -271,7 +271,7 @@ curl "http://127.0.0.1:5000/api/comparison?food1=chicken&food2=apple"
 This project provided hands-on experience with:
 
 * Designing REST APIs with Flask
-* Building service-oriented applications
+* Building layered applications
 * Managing configuration with environment variables
 * Writing unit and API tests with Pytest
 * Mocking external dependencies
